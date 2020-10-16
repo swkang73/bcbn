@@ -1,4 +1,5 @@
 import numpy as np, pandas as pd
+from scipy import stats
 
 """
 Notes on Analysis:
@@ -9,17 +10,22 @@ concavity, concave points, symmetry, fractal dimensions
 """
 
 
-
 print("Import data")
 df = pd.read_csv("data.csv")
 
-print("Yield pairwise attributes")
-raw_attr = df.columns.to_list()
-attr_set = set([attr.split("_")[0] for attr in raw_attr])
+print("get z-score for each")
+new_data = {
+	'id': df['id'],
+	'diagnosis': df['diagnosis']
+}
 
-print("calculate global mean")
-attr_global_avg = {}
-for attr in attr_set:
-	val = np.mean(df[attr + "_mean"])
-	print("for " + attr + " mean: {:.4f}".format(val))
-	attr_global_avg[attr] = val
+print("create new attributes by z-score")
+features = set(df.columns.to_list()) - set(["id", "diagnosis"])
+for f in features:
+	zscores = stats.zscore(df[f])
+	new_data[f] = np.array(zscores > 0, dtype=int)
+
+print("export processed data")
+ndf = pd.DataFrame.from_dict(new_data)
+ndf.to_csv("p_data.csv", index=False)
+
