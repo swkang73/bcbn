@@ -290,6 +290,7 @@ def main():
 		predicted_diagnosis = network.predict(test_X)[0][0]
 		predicted_diagnoses.append(predicted_diagnosis)
 		print("For this round, got prediction of " + str(predicted_diagnosis))
+		print("We were expecting: " + str(true_diagnoses[r]))
 
 	# Score final learning strategy
 	score_learning_strategy(predicted_diagnoses, true_diagnoses)
