@@ -22,10 +22,11 @@ new_data = {
 print("create new attributes by z-score")
 features = set(df.columns.to_list()) - set(["id", "diagnosis"])
 for f in features:
-	zscores = stats.zscore(df[f])
-	new_data[f] = np.array(zscores > 0, dtype=int)
+	if '_se' not in f:
+		zscores = stats.zscore(df[f])
+		new_data[f] = np.array(zscores > 0, dtype=int)
 
 print("export processed data")
 ndf = pd.DataFrame.from_dict(new_data)
-ndf.to_csv("p_data.csv", index=False)
+ndf.to_csv("smaller_p_data.csv", index=False)
 
