@@ -1,0 +1,10 @@
+id,diagnosis,symmetry_se,compactness_worst,radius_worst,smoothness_worst,radius_mean,concavity_mean,concavePoints_worst,texture_se,area_worst,area_se,concavePoints_se,compactness_se,texture_mean,symmetry_worst,compactness_mean,concavity_se,perimeter_se,fractalDimension_mean,concavePoints_mean,smoothness_se,smoothness_mean,concavity_worst,symmetry_mean,radius_se,perimeter_worst,area_mean,fractalDimension_worst,texture_worst,fractalDimension_se,perimeter_mean
+842302,M,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1
+842517,M,0,0,1,0,1,0,1,0,1,1,1,0,0,0,0,0,1,0,1,0,0,0,1,1,1,1,1,0,0,1
+84300903,M,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1,0,1,1
+84348301,M,1,1,0,1,0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0
+84358402,M,0,0,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,0,1,1,1,1,0,1,1,1,0,0,1,1
+843786,M,1,1,0,1,0,1,1,0,0,0,0,1,0,1,1,1,0,1,1,1,1,1,1,0,0,0,1,0,1,0
+844359,M,0,1,1,1,1,1,1,0,1,1,0,0,1,1,1,0,1,0,1,0,0,1,0,1,1,1,0,1,0,1
+84458202,M,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,0
+844981,M,1,1,0,1,0,1,1,0,0,0,1,1,1,1,1,1,0,1,1,0,1,1,1,0,0,0,1,1,0,0

@@ -156,7 +156,7 @@ def score_learning_strategy(predicted, true):
 
 def main():
 
-	data = pd.read_csv('p_data.csv').to_numpy()
+	data = pd.read_csv('small_test.csv').to_numpy()
 	X = data[:, 1:]
 
 	# Keep track of these values for accuracy metrics.
