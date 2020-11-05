@@ -166,6 +166,8 @@ def main():
 
 	t0 = time.time()
 
+	print("Option 1: Bayesian Model")
+
 	# Due to dataset size, we will perform leave one out cross validation:
 	for r in range(X.shape[0]):
 
@@ -180,10 +182,10 @@ def main():
 		test_X[0, 0] = np.nan
 
 		# Option 1: Naive Bayes
-		#network = naive_bayes(train)
+		network = naive_bayes(train)
 
 		# Option 2: Structure learning
-		network = struct_learning(train)
+		#network = struct_learning(train)
 
 		# Plot learned network
 		#plot(network)
