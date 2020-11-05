@@ -12,10 +12,25 @@ import math
 
 import scipy.sparse as sps
 from collections import defaultdict, Counter
+import copy
 
 from pomegranate import *
 
-def predefined_naive_bayes(X, features):
+
+# helper func for predefined_naive_bayes
+def get_all_possible_states(features, bag):
+	if len(features) == 1:
+		bag += [[0],[1]]
+
+	elif len(features) > 1:
+		f = features.pop(0)
+		newbag = get_all_possible_states(features, bag)
+		for elem in newbag:
+			bag.append([0] + elem)
+			bag.append([1] + elem)
+	return bag
+
+def predefined_naive_bayes(X, features, all_states):
 	print("Start creating naive bayes model")
 	model = BayesianNetwork( "Breast Cancer Biopsies" )
 
@@ -44,11 +59,19 @@ def predefined_naive_bayes(X, features):
 			cond_prob[k] = 1
 			prob_interpret[k] = row
 
+	print("add nonappearing entries")
+	# make sure to exclude diagnosis from features
+	missing_states = all_states - set(prob_interpret.values())
+	for k in missing_states:
+		key = str(k)
+		cond_prob[key] = 0
+		prob_interpret[key] = k
+
 	cp_table = []
 	for k in cond_prob:
 		entry = prob_interpret[k] + [cond_prob[k]/total_entries]
 		cp_table.append(entry)
-
+	
 	diagnosis = ConditionalProbabilityTable(cp_table, distribs)
 
 	cond_states = []
@@ -221,6 +244,18 @@ def main():
 
 	t0 = time.time()
 
+	print("Get ready for Naive Bayes Cond Prob Table")
+	all_states = get_all_possible_states(features[1:], [])
+	print(all_states[0])
+	sys.exit()
+
+	all_state_keys = set([])
+	for st in all_states:
+		k1 = ['M'] + st
+		k2 = ['B'] + st
+		all_state_keys.add(k1)
+		all_state_keys.add(k2)
+
 	print("Option 1: Bayesian Model")
 
 	# Due to dataset size, we will perform leave one out cross validation:
@@ -238,7 +273,7 @@ def main():
 
 		# Option 1: Naive Bayes
 		#network = naive_bayes(train)
-		network = predefined_naive_bayes(X, features)
+		network = predefined_naive_bayes(X, copy.deepcopy(features), all_state_keys)
 
 		# Option 2: Structure learning
 		#network = struct_learning(train)
@@ -258,7 +293,7 @@ def main():
 	t1 = time.time()
 
 	# Print total runtime.
-	#print("TOTAL RUNTIME: ", t1-t0)
+	print("TOTAL RUNTIME: ", t1-t0)
 
 
 if __name__ == '__main__':
