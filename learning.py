@@ -245,8 +245,12 @@ def main():
 	t0 = time.time()
 
 	print("Get ready for Naive Bayes Cond Prob Table")
+	allstate_start = time.time()
 	all_states = get_all_possible_states(features[1:], [])
+	allstate_end = time.time()
 	print(all_states[0])
+
+	print("All state time took {:.3f} min to compile".format((allstate_end - allstate_start)/60))
 	sys.exit()
 
 	all_state_keys = set([])
