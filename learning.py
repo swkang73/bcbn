@@ -17,38 +17,42 @@ import copy
 from pomegranate import *
 
 
+MALIGNANT = 1
+BENIGN = 0
+
 # helper func for predefined_naive_bayes
 def get_all_possible_states(features, bag):
 	if len(features) == 1:
-		bag += [[0],[1]]
+		bag.append([0])
+		bag.append([1])
 
 	elif len(features) > 1:
 		f = features.pop(0)
-		newbag = get_all_possible_states(features, bag)
+		newbag = get_all_possible_states(features, copy.deepcopy(bag))
 		for elem in newbag:
 			bag.append([0] + elem)
 			bag.append([1] + elem)
+
 	return bag
 
 def predefined_naive_bayes(X, features, all_states):
-	print("Start creating naive bayes model")
 	model = BayesianNetwork( "Breast Cancer Biopsies" )
 
-	print("create each states as discrete distribution")
+	#"create each states as discrete distribution" 
 	distribs = []
 	total_entries, total_features = X.shape
 	for node_index in range(1, total_features): 
 		# process distrib
 		raw_distrib = X[:,node_index] == 1
 		rdistrib = [int(v) for v in raw_distrib]
-		rd = {k:v/float(len(rdistrib)) for k,v in Counter(rdistrib).items()}
+		rd = {k: v/float(len(rdistrib)) for k,v in Counter(rdistrib).items()}
 
 		# convert to states
 		distrib = DiscreteDistribution(rd)
 		distribs.append(distrib)
 		
 		
-	print("transform data entries as cond distribution")
+	# "transform data entries as cond distribution"
 	cond_prob = {}
 	prob_interpret = {}
 	for row in X.tolist():
@@ -59,19 +63,17 @@ def predefined_naive_bayes(X, features, all_states):
 			cond_prob[k] = 1
 			prob_interpret[k] = row
 
-	print("add nonappearing entries")
-	# make sure to exclude diagnosis from features
-	missing_states = all_states - set(prob_interpret.values())
-	for k in missing_states:
-		key = str(k)
-		cond_prob[key] = 0
-		prob_interpret[key] = k
-
 	cp_table = []
 	for k in cond_prob:
 		entry = prob_interpret[k] + [cond_prob[k]/total_entries]
 		cp_table.append(entry)
-	
+
+	# "add nonappearing entries"
+	# make sure to exclude diagnosis from features
+	missing_states = all_states - set(cond_prob.keys())
+	for k in missing_states:
+		rec = [int(n) for n in k[1:-1].split(", ")]
+		cp_table.append(rec + [0.])
 	diagnosis = ConditionalProbabilityTable(cp_table, distribs)
 
 	cond_states = []
@@ -82,11 +84,10 @@ def predefined_naive_bayes(X, features, all_states):
 	diagnosis_state = State(diagnosis, name=features[0])
 	model.add_state(diagnosis_state)
 
-	print("add edges to naive bayes model")
 	for cstate in cond_states:
 		model.add_edge(cstate, diagnosis_state)
 
-	print("Finally, baking the model!!!")
+	print("Baking the model...")
 	model.bake()
 
 	return model
@@ -233,9 +234,10 @@ def score_learning_strategy(predicted, true):
 
 def main():
 
-	data = pd.read_csv('smaller_p_data.csv')
+	data = pd.read_csv('pdata.csv')
 	features = data.columns.to_list()[1:] # stores list of string feature names, exc ids
 	X = data.to_numpy()[:, 1:]
+	print("Has the following features: " + str(features))
 
 	# Keep track of these values for accuracy metrics.
 	accuracies = list()
@@ -246,19 +248,16 @@ def main():
 
 	print("Get ready for Naive Bayes Cond Prob Table")
 	allstate_start = time.time()
-	all_states = get_all_possible_states(features[1:], [])
+	all_states = get_all_possible_states(copy.deepcopy(features[1:]), [])
 	allstate_end = time.time()
-	print(all_states[0])
+	print("All state time took {:.3f} min to enlist".format((allstate_end - allstate_start)/60))
 
-	print("All state time took {:.3f} min to compile".format((allstate_end - allstate_start)/60))
-	sys.exit()
-
-	all_state_keys = set([])
+	all_state_keys = set()
 	for st in all_states:
-		k1 = ['M'] + st
-		k2 = ['B'] + st
-		all_state_keys.add(k1)
-		all_state_keys.add(k2)
+		k1 = [MALIGNANT] + st 
+		k2 = [BENIGN] + st
+		all_state_keys.add(str(k1))
+		all_state_keys.add(str(k2))
 
 	print("Option 1: Bayesian Model")
 
@@ -273,11 +272,11 @@ def main():
 		actual_diagnosis = test_X[0, 0]
 
 		# Remove the actual diagnosis from the test sample
-		test_X[0, 0] = np.nan
+		# test_X[0, 0] = np.nan
 
 		# Option 1: Naive Bayes
 		#network = naive_bayes(train)
-		network = predefined_naive_bayes(X, copy.deepcopy(features), all_state_keys)
+		network = predefined_naive_bayes(X, features, all_state_keys)
 
 		# Option 2: Structure learning
 		#network = struct_learning(train)
@@ -286,11 +285,8 @@ def main():
 		#plot(network)
 
 		# Used learned network to make a prediction
-		print("Time for prediction")
 		predicted_diagnosis = network.predict(test_X)[0][0]
 		predicted_diagnoses.append(predicted_diagnosis)
-		print("For this round, got prediction of " + str(predicted_diagnosis))
-		print("We were expecting: " + str(true_diagnoses[r]))
 
 	# Score final learning strategy
 	score_learning_strategy(predicted_diagnoses, true_diagnoses)

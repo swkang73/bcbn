@@ -26,7 +26,10 @@ for f in features:
 		zscores = stats.zscore(df[f])
 		new_data[f] = np.array(zscores > 0, dtype=int)
 
+
+new_data['diagnosis'] = [int(v=="M") for v in df['diagnosis']] 
+
 print("export processed data")
 ndf = pd.DataFrame.from_dict(new_data)
-ndf.to_csv("smaller_p_data.csv", index=False)
+ndf.to_csv("pdata.csv", index=False)
 
