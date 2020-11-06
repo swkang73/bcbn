@@ -2,6 +2,9 @@ Mutual dependency measure
 0 = two variables are independent.
 Higher numbers = more dependence.
 
+sklearn.feature_selection.mutual_info_classif
+https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.mutual_info_classif.html
+
 ('area_worst', 0.3830511985118255)
 ('perimeter_worst', 0.3806941851506843)
 ('concavePoints_mean', 0.37429781568682496)
